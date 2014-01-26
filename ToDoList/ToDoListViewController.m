@@ -44,11 +44,11 @@
 {
     [super viewDidLoad];
 
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
- 
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    // Dismiss keyboard by touching background of UITableView
+    // http://stackoverflow.com/questions/2321038/dismiss-keyboard-by-touching-background-of-uitableview
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard)];
+    tap.cancelsTouchesInView = NO;
+    [self.tableView addGestureRecognizer:tap];
     
     self.title = @"To Do List";
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
@@ -57,10 +57,11 @@
     [self.tableView reloadData];
 }
 
-- (void)didReceiveMemoryWarning
+#pragma mark - Dismiss keyboard
+
+- (void)dismissKeyboard
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    [self.view endEditing:YES];
 }
 
 #pragma mark - Table view data source
@@ -144,7 +145,7 @@
 
 - (void)addItem:sender
 {
-    [self.toDoItems insertObject:[[ToDoItem alloc] initWithText:@"New"] atIndex:0];
+    [self.toDoItems insertObject:[[ToDoItem alloc] initWithText:@"(Untitled)"] atIndex:0];
     [self.tableView reloadData];
 }
 

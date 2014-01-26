@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2216B1901895057B00C25741 /* EditableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2216B18F1895057B00C25741 /* EditableCell.xib */; };
 		22AB8A8C1893BCCE00CAAA71 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AB8A8B1893BCCE00CAAA71 /* Foundation.framework */; };
 		22AB8A8E1893BCCE00CAAA71 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AB8A8D1893BCCE00CAAA71 /* CoreGraphics.framework */; };
 		22AB8A901893BCCE00CAAA71 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AB8A8F1893BCCE00CAAA71 /* UIKit.framework */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2216B18F1895057B00C25741 /* EditableCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EditableCell.xib; sourceTree = "<group>"; };
 		22AB8A881893BCCE00CAAA71 /* ToDoList.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ToDoList.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		22AB8A8B1893BCCE00CAAA71 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		22AB8A8D1893BCCE00CAAA71 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -127,6 +129,7 @@
 				22AB8AC41893BDE200CAAA71 /* ToDoListViewController.m */,
 				22D8B2B1189452D7006B957F /* EditableCell.h */,
 				22D8B2B2189452D7006B957F /* EditableCell.m */,
+				2216B18F1895057B00C25741 /* EditableCell.xib */,
 				22AB8AC01893BD1700CAAA71 /* ToDoItem.h */,
 				22AB8AC11893BD1700CAAA71 /* ToDoItem.m */,
 			);
@@ -241,6 +244,7 @@
 				22AB8AA41893BCCE00CAAA71 /* Images.xcassets in Resources */,
 				22AB8A961893BCCE00CAAA71 /* InfoPlist.strings in Resources */,
 				22AB8A9F1893BCCE00CAAA71 /* Main.storyboard in Resources */,
+				2216B1901895057B00C25741 /* EditableCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

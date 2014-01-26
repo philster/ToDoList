@@ -100,35 +100,33 @@
 }
 */
 
-/*
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    }   
+        //[tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [self removeItemAtIndex:indexPath.row];
+    }
     else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }   
 }
-*/
 
-/*
 // Override to support rearranging the table view.
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
+    NSObject *itemToMove = [self.toDoItems objectAtIndex:fromIndexPath.row];
+    [self.toDoItems removeObjectAtIndex:fromIndexPath.row];
+    [self.toDoItems insertObject:itemToMove atIndex:toIndexPath.row];
 }
-*/
 
-/*
 // Override to support conditional rearranging of the table view.
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Return NO if you do not want the item to be re-orderable.
     return YES;
 }
-*/
 
 /*
 #pragma mark - Navigation
@@ -144,16 +142,16 @@
 
 #pragma mark - Private methods
 
-- (void)addItem:(ToDoItem *)item
+- (void)addItem:sender
 {
-    NSLog(@"Adding an item");
-    [self.toDoItems addObject:item];
+    [self.toDoItems insertObject:[[ToDoItem alloc] initWithText:@"New"] atIndex:0];
+    [self.tableView reloadData];
 }
 
-- (void)removeItem:(ToDoItem *)item
+- (void)removeItemAtIndex:(NSUInteger)index
 {
-    NSLog(@"Removing an item");
-    [self.toDoItems removeObject:item];
+    [self.toDoItems removeObjectAtIndex:index];
+    [self.tableView reloadData];
 }
 
 

@@ -18,15 +18,25 @@
 
 @implementation ToDoListViewController
 
+- (NSMutableArray *)toDoItems
+{
+    if (!_toDoItems) _toDoItems = [[NSMutableArray alloc] init];
+    return _toDoItems;
+}
+
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        // create dummy todo list
-        self.toDoItems = [[NSMutableArray alloc] init];
-        [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Eat breakfast"]];
-        [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Go to the gym (yeah right)"]];
-        [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Pick up dry cleaning"]];
+        self.toDoItems = [[NSMutableArray alloc] initWithArray:[self loadData]];
+        
+        if (self.toDoItems.count < 1) {
+            // create dummy todo list
+            [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Eat breakfast"]];
+            [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Go to the gym (yeah right)"]];
+            [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Pick up dry cleaning"]];
+            [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Multi \n line \n todo"]];
+        }
     }
     return self;
 }
@@ -43,6 +53,7 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    //[self setEditing:NO animated:YES];
 
     // Dismiss keyboard by touching background of UITableView
     // http://stackoverflow.com/questions/2321038/dismiss-keyboard-by-touching-background-of-uitableview
@@ -54,7 +65,8 @@
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addItem:)];
     
-    [self.tableView reloadData];
+    UINib *customNib = [UINib nibWithNibName:@"EditableCell" bundle:nil];
+    [self.tableView registerNib:customNib forCellReuseIdentifier:@"MyEditableCell"];
 }
 
 #pragma mark - Dismiss keyboard
@@ -66,13 +78,11 @@
 
 #pragma mark - Table view data source
 
-/*
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    return 0;
+    return 1;
 }
-*/
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -88,18 +98,18 @@
     // Configure the cell...
     ToDoItem *toDoItem = self.toDoItems[indexPath.row];
     cell.toDoItemCell.text = toDoItem.text;
+    cell.toDoItemCell.tag = indexPath.row;
+    cell.toDoItemCell.delegate = self;
     
     return cell;
 }
 
-/*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
     // Return NO if you do not want the specified item to be editable.
     return YES;
 }
-*/
 
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
@@ -141,18 +151,72 @@
 
  */
 
+#pragma mark - Text view delegate methods
+
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    NSLog(@"text view begin editing");
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
+    // replace item
+    ToDoItem *item = [[ToDoItem alloc] initWithText:textView.text];
+    [self.toDoItems replaceObjectAtIndex:textView.tag withObject:item];
+    // save data to user defaults
+    [self saveData:self.toDoItems];
+}
+
 #pragma mark - Private methods
 
 - (void)addItem:sender
 {
-    [self.toDoItems insertObject:[[ToDoItem alloc] initWithText:@"(Untitled)"] atIndex:0];
+    // create new item
+    ToDoItem *item = [[ToDoItem alloc] init];
+    [self.toDoItems insertObject:item atIndex:0];
+    // refresh table view
     [self.tableView reloadData];
+    // enter edit mode
+    EditableCell *cell = (EditableCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
+    [cell.toDoItemCell becomeFirstResponder];
 }
 
 - (void)removeItemAtIndex:(NSUInteger)index
 {
+    [self.tableView beginUpdates];
     [self.toDoItems removeObjectAtIndex:index];
-    [self.tableView reloadData];
+    [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]]
+                          withRowAnimation:UITableViewRowAnimationFade];
+    [self.tableView endUpdates];
+    // save data to user defaults
+    [self saveData:self.toDoItems];
+}
+
+- (NSArray *)loadData
+{
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    NSArray *archiveArray = [userDefaults objectForKey:@"toDoItems"];
+
+    NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity:archiveArray.count];
+    for (NSData *archive in archiveArray) {
+        ToDoItem *item = [[ToDoItem alloc] initWithText:[NSKeyedUnarchiver unarchiveObjectWithData:archive]];
+        [itemArray addObject:item];
+    }
+    
+    return itemArray;
+}
+
+- (void)saveData:(NSArray *)items
+{
+    NSMutableArray *archiveArray = [NSMutableArray arrayWithCapacity:items.count];
+    for (ToDoItem *item in items) {
+        NSData *archive = [NSKeyedArchiver archivedDataWithRootObject:item.text];
+        [archiveArray addObject:archive];
+    }
+    
+    NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
+    [userDefaults setObject:archiveArray forKey:@"toDoItems"];
+    [userDefaults synchronize];
 }
 
 

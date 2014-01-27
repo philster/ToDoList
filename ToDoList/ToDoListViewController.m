@@ -13,6 +13,8 @@
 @interface ToDoListViewController ()
 
 @property (nonatomic, strong) NSMutableArray *toDoItems;
+@property (nonatomic, strong) UIBarButtonItem *tempLeftButtonItem;
+@property (nonatomic, strong) UIBarButtonItem *tempRightButtonItem;
 
 @end
 
@@ -67,6 +69,15 @@
     
     UINib *customNib = [UINib nibWithNibName:@"EditableCell" bundle:nil];
     [self.tableView registerNib:customNib forCellReuseIdentifier:@"MyEditableCell"];
+}
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated
+{
+    [super setEditing:editing animated:animated];
+    for (EditableCell *cell in [self.tableView visibleCells]) {
+        // disable UITextViews when in edit mode
+        [cell.toDoItemCell setEditable:!editing];
+    }
 }
 
 #pragma mark - Dismiss keyboard
@@ -155,11 +166,30 @@
 
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
-    NSLog(@"text view begin editing");
+    // cache menu buttons
+    self.tempLeftButtonItem = self.navigationItem.leftBarButtonItem;
+    self.tempRightButtonItem = self.navigationItem.rightBarButtonItem;
+    // create save & cancel buttons
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveItem:)];
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelItem:)];
+}
+
+- (void)cancelItem:sender
+{
+    [self.view endEditing:YES];
+}
+
+- (void)saveItem:sender
+{
+    [self.view endEditing:YES];
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
+    // restore cached menu buttons
+    self.navigationItem.leftBarButtonItem = self.tempLeftButtonItem;
+    self.navigationItem.rightBarButtonItem = self.tempRightButtonItem;
+    
     // replace item
     ToDoItem *item = [[ToDoItem alloc] initWithText:textView.text];
     [self.toDoItems replaceObjectAtIndex:textView.tag withObject:item];

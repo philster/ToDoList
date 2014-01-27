@@ -30,10 +30,11 @@
 {
     self = [super initWithCoder:aDecoder];
     if (self) {
-        self.toDoItems = [[NSMutableArray alloc] initWithArray:[self loadData]];
+        // Load data from persistent storage
+        [self.toDoItems addObjectsFromArray:[self loadData]];
         
         if (self.toDoItems.count < 1) {
-            // create dummy todo list
+            // Create dummy todo list
             [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Eat breakfast"]];
             [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Go to the gym (yeah right)"]];
             [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Pick up dry cleaning"]];
@@ -55,7 +56,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    //[self setEditing:NO animated:YES];
 
     // Dismiss keyboard by touching background of UITableView
     // http://stackoverflow.com/questions/2321038/dismiss-keyboard-by-touching-background-of-uitableview
@@ -63,10 +63,12 @@
     tap.cancelsTouchesInView = NO;
     [self.tableView addGestureRecognizer:tap];
     
+    // Set title and navigation buttons
     self.title = @"To Do List";
     self.navigationItem.leftBarButtonItem = self.editButtonItem;
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(addItem:)];
     
+    // Load custom UITableViewCell from nib
     UINib *customNib = [UINib nibWithNibName:@"EditableCell" bundle:nil];
     [self.tableView registerNib:customNib forCellReuseIdentifier:@"MyEditableCell"];
 }
@@ -162,10 +164,11 @@
 
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {
-    // cache menu buttons
+    // Cache menu buttons
     self.tempLeftButtonItem = self.navigationItem.leftBarButtonItem;
     self.tempRightButtonItem = self.navigationItem.rightBarButtonItem;
-    // create save & cancel buttons
+
+    // Create Save & Cancel buttons
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveItem:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelItem:)];
 }
@@ -182,14 +185,15 @@
 
 - (void)textViewDidEndEditing:(UITextView *)textView
 {
-    // restore cached menu buttons
+    // Restore cached menu buttons
     self.navigationItem.leftBarButtonItem = self.tempLeftButtonItem;
     self.navigationItem.rightBarButtonItem = self.tempRightButtonItem;
     
-    // replace item
+    // Replace item
     ToDoItem *item = [[ToDoItem alloc] initWithText:textView.text];
     [self.toDoItems replaceObjectAtIndex:textView.tag withObject:item];
-    // save data to user defaults
+    
+    // Save data to user defaults
     [self saveData:self.toDoItems];
 }
 
@@ -197,26 +201,31 @@
 
 - (void)addItem:sender
 {
-    // create new item
+    // Create new item
     ToDoItem *item = [[ToDoItem alloc] init];
     [self.toDoItems insertObject:item atIndex:0];
-    // refresh table view
+    
+    // Refresh table view
     [self.tableView reloadData];
-    // enter edit mode
+    
+    // Enter edit mode
     EditableCell *cell = (EditableCell *)[self.tableView cellForRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
     [cell.toDoItemCell becomeFirstResponder];
 }
 
 - (void)removeItemAtIndex:(NSUInteger)index
 {
+    // Remove item
     [self.tableView beginUpdates];
     [self.toDoItems removeObjectAtIndex:index];
     [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]]
                           withRowAnimation:UITableViewRowAnimationFade];
     [self.tableView endUpdates];
-    // refresh table view
+    
+    // Refresh table view
     [self.tableView reloadData];
-    // save data to user defaults
+    
+    // Save data to persistent storage
     [self saveData:self.toDoItems];
 }
 
@@ -224,7 +233,7 @@
 {
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
     NSArray *archiveArray = [userDefaults objectForKey:@"toDoItems"];
-
+    
     NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity:archiveArray.count];
     for (NSData *archive in archiveArray) {
         ToDoItem *item = [[ToDoItem alloc] initWithText:[NSKeyedUnarchiver unarchiveObjectWithData:archive]];
@@ -236,6 +245,7 @@
 
 - (void)saveData:(NSArray *)items
 {
+    // Reference: http://stackoverflow.com/questions/19720611/attempt-to-set-a-non-property-list-object-as-an-nsuserdefaults
     NSMutableArray *archiveArray = [NSMutableArray arrayWithCapacity:items.count];
     for (ToDoItem *item in items) {
         NSData *archive = [NSKeyedArchiver archivedDataWithRootObject:item.text];

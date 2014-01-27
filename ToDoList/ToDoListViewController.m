@@ -218,6 +218,8 @@
     [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]]
                           withRowAnimation:UITableViewRowAnimationFade];
     [self.tableView endUpdates];
+    // refresh table view
+    [self.tableView reloadData];
     // save data to user defaults
     [self saveData:self.toDoItems];
 }

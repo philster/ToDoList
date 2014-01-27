@@ -71,15 +71,6 @@
     [self.tableView registerNib:customNib forCellReuseIdentifier:@"MyEditableCell"];
 }
 
-- (void)setEditing:(BOOL)editing animated:(BOOL)animated
-{
-    [super setEditing:editing animated:animated];
-    for (EditableCell *cell in [self.tableView visibleCells]) {
-        // disable UITextViews when in edit mode
-        [cell.toDoItemCell setEditable:!editing];
-    }
-}
-
 #pragma mark - Dismiss keyboard
 
 - (void)dismissKeyboard
@@ -163,6 +154,11 @@
  */
 
 #pragma mark - Text view delegate methods
+
+- (BOOL)textViewShouldBeginEditing:(UITextView *)textView
+{
+    return !self.isEditing;
+}
 
 - (void)textViewDidBeginEditing:(UITextView *)textView
 {

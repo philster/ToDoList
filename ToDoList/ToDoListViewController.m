@@ -38,7 +38,7 @@
             [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Eat breakfast"]];
             [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Go to the gym (yeah right)"]];
             [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Pick up dry cleaning"]];
-            [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Multi \n line \n todo"]];
+            [self.toDoItems addObject:[[ToDoItem alloc] initWithText:@"Multiline item Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."]];
         }
     }
     return self;
@@ -143,6 +143,25 @@
     return YES;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    // minimum cell height
+    static CGFloat minHeight = 44;
+    
+    // Derive attributed text and width
+    ToDoItem *item = self.toDoItems[indexPath.row];
+    NSAttributedString *text = [[NSAttributedString alloc] initWithString:item.text];
+    
+    CGRect screenRect = [[UIScreen mainScreen] bounds];
+    CGFloat width = screenRect.size.width - 40;  // screen width less 20px margins
+    
+    // Reference: http://stackoverflow.com/questions/18368567/uitableviewcell-with-uitextview-height-in-ios-7
+    UITextView *calculationView = [[UITextView alloc] init];
+    [calculationView setAttributedText:text];
+    CGSize size = [calculationView sizeThatFits:CGSizeMake(width, FLT_MAX)];
+    return MAX(size.height, minHeight);
+}
+
 /*
 #pragma mark - Navigation
 
@@ -156,6 +175,14 @@
  */
 
 #pragma mark - Text view delegate methods
+
+- (void)textViewDidChange:(UITextView *)textView
+{
+    [self.tableView beginUpdates]; // This will cause an animated update of
+    [self.tableView endUpdates];   // the height of your UITableViewCell
+ 
+    [self scrollToCursorForTextView:textView];
+}
 
 - (BOOL)textViewShouldBeginEditing:(UITextView *)textView
 {
@@ -171,6 +198,8 @@
     // Create Save & Cancel buttons
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveItem:)];
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelItem:)];
+    
+    [self scrollToCursorForTextView:textView];
 }
 
 - (void)cancelItem:sender
@@ -227,6 +256,29 @@
     
     // Save data to persistent storage
     [self saveData:self.toDoItems];
+}
+
+- (void)scrollToCursorForTextView:(UITextView *)textView
+{
+    CGRect cursorRect = [textView caretRectForPosition:textView.selectedTextRange.start];
+    
+    cursorRect = [self.tableView convertRect:cursorRect fromView:textView];
+    
+    if (![self rectVisible:cursorRect]) {
+        cursorRect.size.height += 8; // To add some space underneath the cursor
+        [self.tableView scrollRectToVisible:cursorRect animated:YES];
+    }
+}
+
+- (BOOL)rectVisible:(CGRect)rect
+{
+    CGRect visibleRect;
+    visibleRect.origin = self.tableView.contentOffset;
+    visibleRect.origin.y += self.tableView.contentInset.top;
+    visibleRect.size = self.tableView.bounds.size;
+    visibleRect.size.height -= self.tableView.contentInset.top + self.tableView.contentInset.bottom;
+    
+    return CGRectContainsRect(visibleRect, rect);
 }
 
 - (NSArray *)loadData

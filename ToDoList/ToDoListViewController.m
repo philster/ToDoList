@@ -195,21 +195,11 @@
     self.tempLeftButtonItem = self.navigationItem.leftBarButtonItem;
     self.tempRightButtonItem = self.navigationItem.rightBarButtonItem;
 
-    // Create Save & Cancel buttons
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave target:self action:@selector(saveItem:)];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancelItem:)];
+    // Create Done button
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissKeyboard)];
+    self.navigationItem.rightBarButtonItem = nil;
     
     [self scrollToCursorForTextView:textView];
-}
-
-- (void)cancelItem:sender
-{
-    [self.view endEditing:YES];
-}
-
-- (void)saveItem:sender
-{
-    [self.view endEditing:YES];
 }
 
 - (void)textViewDidEndEditing:(UITextView *)textView

@@ -13,14 +13,23 @@
                 <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" fixedFrame="YES" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JKO-Po-QZ4">
-                        <rect key="frame" x="20" y="0.0" width="280" height="43"/>
+                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="JKO-Po-QZ4">
+                        <rect key="frame" x="20" y="6" width="280" height="31"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" constant="280" id="6no-ZR-Z9c"/>
+                        </constraints>
                         <string key="text">Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.</string>
                         <fontDescription key="fontDescription" type="system" pointSize="20"/>
                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                     </textView>
                 </subviews>
+                <constraints>
+                    <constraint firstItem="JKO-Po-QZ4" firstAttribute="top" secondItem="EZW-yf-mMx" secondAttribute="top" constant="6" id="GV4-ur-4mq"/>
+                    <constraint firstAttribute="trailing" secondItem="JKO-Po-QZ4" secondAttribute="trailing" constant="20" id="PWE-kZ-drr"/>
+                    <constraint firstAttribute="bottom" secondItem="JKO-Po-QZ4" secondAttribute="bottom" constant="6" id="Yqd-6X-KV3"/>
+                    <constraint firstItem="JKO-Po-QZ4" firstAttribute="leading" secondItem="EZW-yf-mMx" secondAttribute="leading" constant="20" id="dYX-zV-d7q"/>
+                </constraints>
             </tableViewCellContentView>
             <connections>
                 <outlet property="toDoItemCell" destination="JKO-Po-QZ4" id="aHc-Xi-D4b"/>

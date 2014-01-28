@@ -235,8 +235,8 @@
     NSArray *archiveArray = [userDefaults objectForKey:@"toDoItems"];
     
     NSMutableArray *itemArray = [NSMutableArray arrayWithCapacity:archiveArray.count];
-    for (NSData *archive in archiveArray) {
-        ToDoItem *item = [[ToDoItem alloc] initWithText:[NSKeyedUnarchiver unarchiveObjectWithData:archive]];
+    for (NSString *text in archiveArray) {
+        ToDoItem *item = [[ToDoItem alloc] initWithText:text];
         [itemArray addObject:item];
     }
     
@@ -245,11 +245,9 @@
 
 - (void)saveData:(NSArray *)items
 {
-    // Reference: http://stackoverflow.com/questions/19720611/attempt-to-set-a-non-property-list-object-as-an-nsuserdefaults
     NSMutableArray *archiveArray = [NSMutableArray arrayWithCapacity:items.count];
     for (ToDoItem *item in items) {
-        NSData *archive = [NSKeyedArchiver archivedDataWithRootObject:item.text];
-        [archiveArray addObject:archive];
+        [archiveArray addObject:item.text];
     }
     
     NSUserDefaults *userDefaults = [NSUserDefaults standardUserDefaults];
